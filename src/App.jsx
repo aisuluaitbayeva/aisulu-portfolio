@@ -148,7 +148,7 @@ export default function App() {
       >
         <Section className="flex items-center justify-between py-4">
           <div className="flex items-center gap-3">
-            <img src="/Avatar.jpeg" className="rounded-full object-cover" style={{ width: 36, height: 36 }} />
+            <img src="/Avatar.jpeg" className="rounded-full object-cover" style={{ width: 48, height: 48 }} />
             <span className="font-semibold text-[15px]" style={{ fontFamily: DISPLAY_FONT }}>
               Айсулу Айтбаева
             </span>
