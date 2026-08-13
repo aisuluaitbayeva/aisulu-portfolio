@@ -176,13 +176,13 @@ export default function App() {
       {/* Hero */}
       <Section className="pt-20 pb-16">
         <p
-          className="text-[34px] md:text-[52px] lg:text-[60px] leading-[1.15] font-semibold tracking-tight max-w-5xl"
+          className="text-[26px] md:text-[36px] leading-[1.4] font-semibold max-w-5xl"
           style={{ fontFamily: DISPLAY_FONT }}
         >
-          Продуктовый дизайнер в <Accent>B2B fintech</Accent>. Привет, меня зовут Айсулу. Работаю
-          с финтех-продуктами: от <Accent>валютных операций до трансграничных переводов</Accent>.
-          Из сложных финансовых процессов и требований законодательства я делаю{" "}
-          <Accent>понятные интерфейсы</Accent>, полезные для пользователей и бизнеса.
+          Продуктовый дизайнер в{' \u00A0 '}<Accent>B2B fintech</Accent>. Работаю
+          над{' \u00A0 '}продуктами для{' \u00A0 '}банкинга: от{' \u00A0 '}<Accent>валютных операций до{' \u00A0 '}международных переводов</Accent>.
+          Из{' \u00A0 '}сложных финансовых процессов и{' \u00A0 '}требований законодательства я делаю{" "}
+          <Accent>понятные интерфейсы</Accent>, полезные для{' \u00A0 '}пользователей и{' \u00A0 '}бизнеса
         </p>
       </Section>
 
