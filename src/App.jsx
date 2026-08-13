@@ -13,7 +13,7 @@ const LINKS = {
   linkedin: "http://linkedin.com/in/aisulu-aitbayeva/",
   email: "aisulu.aitbayeva@gmail.com",
   // Положите файл резюме в папку /public как cv.pdf — ссылка ниже уже на него ссылается.
-  cv: "/cv.pdf",
+  cv: "/CV_RU.pdf",
 };
 
 // Section wrapper: content fills 85% of viewport width, capped at a max
@@ -163,7 +163,8 @@ export default function App() {
             <TextLink href={`mailto:${LINKS.email}`}>Email</TextLink>
             <a
               href={LINKS.cv}
-              download
+              target="_blank"
+              rel="noopener noreferrer" 
               className="cv-btn flex items-center gap-1.5 rounded-full px-4 py-2 text-[14px] font-medium text-white"
               style={{ background: ACCENT }}
             >
