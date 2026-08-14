@@ -184,6 +184,7 @@ const projects = [
     results: ["От MVP к полноценному продукту", "Проведение usability-тестирований", "Рост ежедневных FX-операций в 5,9 раза"],
     note: null,
     media: [
+       { src: "/FX-1.png" },
        { src: "/FX-2.png" },
     ],
   },
