@@ -290,7 +290,7 @@ export default function App() {
               className="cv-btn flex items-center gap-1.5 rounded-full px-4 py-2 text-[14px] font-medium text-white"
               style={{ background: ACCENT }}
             >
-              CV <ArrowDown size={14} />
+              CV <ArrowRight size={14} />
             </a>
           </nav>
         </Section>
