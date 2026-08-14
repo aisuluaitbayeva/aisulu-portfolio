@@ -164,7 +164,7 @@ function SlideContent({ item, variant = "thumbnail" }) {
           </button>
           <div
             className="rounded-2xl overflow-hidden max-w-4xl w-full flex items-center justify-center"
-            style={{ background: "#FFFFFF" }}
+            style={{ background: "#F3F4F7" }}
             onClick={(e) => e.stopPropagation()}
           >
             <SlideContent item={slide} variant="full" />
