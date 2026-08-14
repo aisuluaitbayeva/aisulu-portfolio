@@ -1,5 +1,5 @@
-import React from "react";
-import { ArrowDown, ArrowUpRight } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ArrowDown, ArrowUpRight, X } from "lucide-react";
 
 const ACCENT = "#1F48CE";
 const INK = "#0B1220";
@@ -12,7 +12,7 @@ const LINKS = {
   telegram: "https://t.me/aisulu_aitbayeva",
   linkedin: "http://linkedin.com/in/aisulu-aitbayeva/",
   email: "aisulu.aitbayeva@gmail.com",
-  // Положите файл резюме в папку /public как cv.pdf — ссылка ниже уже на него ссылается.
+  // Положите файл резюме в папку /public как CV_RU.pdf — ссылка ниже уже на него ссылается.
   cv: "/CV_RU.pdf",
 };
 
@@ -52,30 +52,170 @@ function TextLink({ href, color = INK, external = false, children }) {
   );
 }
 
+// ---- Карусель медиа внутри карточки проекта ----
+//
+// Как добавить реальные скриншоты/видео:
+// 1. Положите файлы в папку /public (например, fx-1.png, fx-2.png)
+// 2. В массиве projects ниже, в поле media конкретного проекта,
+//    замените { src: null } на { src: "/fx-1.png" } (для видео — { src: "/demo.mp4", video: true })
+// 3. Один элемент в массиве media = один слайд. Точки-индикаторы и автопрокрутка
+//    появляются автоматически, как только элементов больше одного — руками включать не нужно.
+function ProjectMedia({ media, altBase }) {
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const [zoomed, setZoomed] = useState(false);
+  const slide = media[index];
+
+  // Автопрокрутка: 5 секунд на слайд — минимум, который рекомендуют для
+  // авто-каруселей (NN/g), чтобы пользователь успевал считать содержимое.
+  // Останавливается при наведении курсора.
+  useEffect(() => {
+    if (media.length <= 1 || paused) return;
+    const timer = setInterval(() => {
+      setIndex((i) => (i + 1) % media.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [media.length, paused]);
+
+  // Закрытие модалки по Escape
+  useEffect(() => {
+    if (!zoomed) return;
+    const onKey = (e) => e.key === "Escape" && setZoomed(false);
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [zoomed]);
+
+  function SlideContent({ item, className }) {
+    if (!item?.src) {
+      return (
+        <div className={`h-full w-full flex items-center justify-center ${className || ""}`}>
+          <div className="text-center px-6">
+            <div
+              className="mx-auto mb-3 rounded-full flex items-center justify-center"
+              style={{ width: 40, height: 40, background: "#EEF0F3" }}
+            >
+              <ArrowUpRight size={18} color={FAINT} />
+            </div>
+            <p className="text-sm" style={{ color: FAINT }}>
+              {media.length > 1 ? `Скриншот ${index + 1} из ${media.length}` : "Скриншот интерфейса"}
+            </p>
+          </div>
+        </div>
+      );
+    }
+    if (item.video) {
+      return (
+        <video
+          src={item.src}
+          className={`h-full w-full object-cover ${className || ""}`}
+          autoPlay
+          loop
+          muted
+          playsInline
+        />
+      );
+    }
+    return (
+      <img
+        src={item.src}
+        alt={item.alt || altBase}
+        className={`h-full w-full object-cover ${className || ""}`}
+      />
+    );
+  }
+
+  return (
+    <>
+      <div
+        className="relative rounded-2xl h-full min-h-[280px] overflow-hidden cursor-zoom-in"
+        style={{ background: "#FFFFFF" }}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onClick={() => setZoomed(true)}
+      >
+        <SlideContent item={slide} />
+
+        {media.length > 1 && (
+          <div
+            className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 px-2.5 py-2 rounded-full"
+            style={{ background: "rgba(11,18,32,0.55)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {media.map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                aria-label={`Слайд ${i + 1}`}
+                onClick={() => setIndex(i)}
+                className="rounded-full transition-all duration-300"
+                style={{
+                  width: i === index ? 16 : 6,
+                  height: 6,
+                  background: i === index ? "#FFFFFF" : "rgba(255,255,255,0.5)",
+                }}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {zoomed && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-6"
+          style={{ background: "rgba(11,18,32,0.75)" }}
+          onClick={() => setZoomed(false)}
+        >
+          <button
+            type="button"
+            aria-label="Закрыть"
+            className="absolute top-6 right-6 rounded-full p-2"
+            style={{ background: "rgba(255,255,255,0.15)" }}
+            onClick={() => setZoomed(false)}
+          >
+            <X size={20} color="#FFFFFF" />
+          </button>
+          <div
+            className="rounded-2xl overflow-hidden max-w-4xl w-full"
+            style={{ background: "#FFFFFF" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="aspect-video w-full flex items-center justify-center">
+              <SlideContent item={slide} className="aspect-video" />
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
 const projects = [
   {
     chips: ["UX/UI", "Web", "Mobile"],
-    title: "FX Exchange для бизнеса",
+    title: "FX Exchange для бизнеса",
     description:
-      "Задизайнила FX-обменник для юридических лиц с нуля — от MVP с ограниченными валютными парами и лимитами операций до полноценного продукта для покупки и продажи валюты по динамическим котировкам. По мере развития продукта проектировала новые сценарии и усложняла флоу: сделки по валютным контрактам, фиксация курса, сложные сценарии подписания и онбординг",
-    results: ["От MVP к полноценному продукту", "Проведение usability-тестирований", "Рост ежедневных FX-операций в 5,9 раза"],
+      "Задизайнила FX-обменник для юридических лиц с нуля — от MVP с ограниченными валютными парами и лимитами операций до полноценного продукта для покупки и продажи валюты по динамическим котировкам. По мере развития продукта проектировала новые сценарии и усложняла флоу: сделки по валютным контрактам, фиксация курса, сложные сценарии подписания и онбординг",
+    results: ["От MVP к полноценному продукту", "Проведение usability-тестирований", "Рост ежедневных FX-операций в 5,9 раза"],
     note: null,
+    media: [{ src: null }],
   },
   {
     chips: ["UX/UI", "Mobile"],
     title: "Редизайн международных переводов",
     description:
-      "Редизайнила флоу международных переводов для юридических лиц: изначально задача заключалась в добавлении новых полей по стандарту ISO 20022, но я предложила переработать весь пользовательский сценарий. Разделила перегруженную одностраничную форму на последовательные шаги, интегрировала новые требования стандарта и добавила больше прозрачности в процесс, включая уведомления о нерабочих днях и подсказки о ближайшей доступной дате перевода",
+      "Редизайнила флоу международных переводов для юридических лиц: изначально задача заключалась в добавлении новых полей по стандарту ISO 20022, но я предложила переработать весь пользовательский сценарий. Разделила перегруженную одностраничную форму на последовательные шаги, интегрировала новые требования стандарта и добавила больше прозрачности в процесс, включая уведомления о нерабочих днях и подсказки о ближайшей доступной дате перевода",
     results: [],
     note: "Флоу уже запущен, продуктовые метрики сейчас собираются",
+    media: [{ src: null }],
   },
   {
     chips: ["UX/UI", "Web", "Mobile"],
-    title: "Договоры по QR для электронного документооборота",
+    title: "Договоры по QR для электронного документооборота",
     description:
-      "Спроектировала новый сценарий массового подписания договоров в B2B-платформе электронного документооборота — для случаев, когда инициатор не знает данные контрагентов заранее. Вместе с командой провела usability-тестирования и создала flow, в котором компания делится QR-кодом или ссылкой на типовой договор, а контрагент самостоятельно заполняет свои данные и подписывает документ. Сценарий также стал дополнительной точкой входа в продукт для новых пользователей",
-    results: ["Проведение usability-тестирований", "−32% времени от создания до подписания", "Конверсия во флоу регистрации 11%"],
+      "Спроектировала новый сценарий массового подписания договоров в B2B-платформе электронного документооборота — для случаев, когда инициатор не знает данные контрагентов заранее. Вместе с командой провела usability-тестирования и создала flow, в котором компания делится QR-кодом или ссылкой на типовой договор, а контрагент самостоятельно заполняет свои данные и подписывает документ. Сценарий также стал дополнительной точкой входа в продукт для новых пользователей",
+    results: ["Проведение usability-тестирований", "−32% времени от создания до подписания", "Конверсия во флоу регистрации 11%"],
     note: null,
+    media: [{ src: null }],
   },
 ];
 
@@ -84,42 +224,21 @@ const experience = [
     company: "Alatau City Bank (ex. Jusan Bank)",
     period: "декабрь 2025 — настоящее время",
     description:
-      "Работаю в команде ВЭДа, в банке для юридических лиц. Наша команда отвечает за все валютные продукты: конвертации, переводы, валютные контракты. Как единственный дизайнер в команде, я успела поработать с этими продуктами сразу с нескольких сторон — не только дизайнила пользовательские интерфейсы (web и mobile), но и проектировала админ-панель для валютного контроля и казначейства",
+      "Работаю в команде ВЭДа, в банке для юридических лиц. Наша команда отвечает за все валютные продукты: конвертации, переводы, валютные контракты. Как единственный дизайнер в команде, я успела поработать с этими продуктами сразу с нескольких сторон — не только дизайнила пользовательские интерфейсы (web и mobile), но и проектировала админ-панель для валютного контроля и казначейства",
   },
   {
     company: "Documentolog",
     period: "май 2025 — ноябрь 2025",
     description:
-      "Начала работу как дизайнер маркетинговых лендингов, а затем перешла в продуктовую команду и стала проектировать сервис электронного документооборота для физических лиц и предпринимателей. Здесь научилась работать с кроссплатформенными продуктами, много концептить и не бояться предлагать смелые решения",
+      "Начала работу как дизайнер маркетинговых лендингов, а затем перешла в продуктовую команду и стала проектировать сервис электронного документооборота для физических лиц и предпринимателей. Здесь научилась работать с кроссплатформенными продуктами, много концептить и не бояться предлагать смелые решения",
   },
   {
     company: "NewProject",
     period: "март 2024 — май 2025",
     description:
-      "Моя первая работа как продуктового дизайнера началась здесь. Дизайнила интерфейс для мобильного приложения для брокеров. В этой команде я узнала больше о бизнес-процессах и том, какое место в них занимает дизайн; о том, как фича проходит свой путь от гипотезы до реализации и конечного пользователя",
+      "Моя первая работа как продуктового дизайнера началась здесь. Дизайнила интерфейс для мобильного приложения для брокеров. В этой команде я узнала больше о бизнес-процессах и том, какое место в них занимает дизайн; о том, как фича проходит свой путь от гипотезы до реализации и конечного пользователя",
   },
 ];
-
-function ProjectScreenshotPlaceholder() {
-  return (
-    <div
-      className="rounded-2xl h-full min-h-[280px] flex items-center justify-center"
-      style={{ background: "#FFFFFF" }}
-    >
-      <div className="text-center px-6">
-        <div
-          className="mx-auto mb-3 rounded-full flex items-center justify-center"
-          style={{ width: 40, height: 40, background: "#EEF0F3" }}
-        >
-          <ArrowUpRight size={18} color={FAINT} />
-        </div>
-        <p className="text-sm" style={{ color: FAINT }}>
-          Скриншот интерфейса
-        </p>
-      </div>
-    </div>
-  );
-}
 
 export default function App() {
   return (
@@ -147,7 +266,10 @@ export default function App() {
         style={{ background: "rgba(255,255,255,0.85)", borderColor: "#EEF0F3" }}
       >
         <Section className="flex items-center justify-between py-4">
-          <div className="flex items-center gap-3">
+          <div
+            className="flex items-center gap-3 cursor-pointer"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+          >
             <img src="/Avatar.jpeg" className="rounded-full object-cover" style={{ width: 48, height: 48 }} />
             <span className="font-semibold text-[15px]" style={{ fontFamily: DISPLAY_FONT }}>
               Айсулу Айтбаева
@@ -164,7 +286,7 @@ export default function App() {
             <a
               href={LINKS.cv}
               target="_blank"
-              rel="noopener noreferrer" 
+              rel="noopener noreferrer"
               className="cv-btn flex items-center gap-1.5 rounded-full px-4 py-2 text-[14px] font-medium text-white"
               style={{ background: ACCENT }}
             >
@@ -180,10 +302,10 @@ export default function App() {
           className="text-[26px] md:text-[36px] leading-[1.4] font-semibold max-w-5xl"
           style={{ fontFamily: DISPLAY_FONT }}
         >
-          Продуктовый дизайнер в <Accent>B2B fintech</Accent>. Работаю
-          над продуктами для банкинга: от <Accent>валютных операций до международных переводов</Accent>.
-          Из сложных финансовых процессов и требований законодательства я делаю{" "}
-          <Accent>понятные интерфейсы</Accent>, полезные для пользователей и бизнеса
+          Продуктовый дизайнер в <Accent>B2B fintech</Accent>. Работаю
+          над продуктами для банкинга: от <Accent>валютных операций до международных переводов</Accent>.
+          Из сложных финансовых процессов и требований законодательства я делаю{" "}
+          <Accent>понятные интерфейсы</Accent>, полезные для пользователей и бизнеса
         </p>
       </Section>
 
@@ -199,7 +321,7 @@ export default function App() {
               className="rounded-3xl p-6 md:p-8 grid md:grid-cols-2 gap-8 items-stretch"
               style={{ background: "#F3F4F7" }}
             >
-              <ProjectScreenshotPlaceholder />
+              <ProjectMedia media={p.media} altBase={p.title} />
               <div className="flex flex-col justify-center">
                 <div className="flex gap-2 mb-4 flex-wrap">
                   {p.chips.map((c) => (
@@ -281,19 +403,19 @@ export default function App() {
           className="text-[26px] md:text-[36px] leading-[1.4] font-semibold max-w-5xl"
           style={{ fontFamily: DISPLAY_FONT }}
         >
-          На самом деле, за каждым проектом стоит своя история. Давайте обсудим детали вместе, и я
-          расскажу вам подробнее о трудностях, исследованиях, решениях и результатах моей работы.
-          Связаться со мной можно{" "}
+          На самом деле, за каждым проектом стоит своя история. Давайте обсудим детали вместе, и я
+          расскажу вам подробнее о трудностях, исследованиях, решениях и результатах моей работы.
+          Связаться со мной можно{" "}
           <TextLink href={LINKS.telegram} color={ACCENT} external>
-            через Telegram
+            через Telegram
           </TextLink>
           , или{" "}
           <TextLink href={`mailto:${LINKS.email}`} color={ACCENT}>
-            напишите мне на почту
+            напишите мне на почту
           </TextLink>
           , или{" "}
           <TextLink href={LINKS.linkedin} color={ACCENT} external>
-            установите контакт в LinkedIn
+            установите контакт в LinkedIn
           </TextLink>
         </p>
       </Section>
