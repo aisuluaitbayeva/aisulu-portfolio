@@ -85,10 +85,13 @@ function ProjectMedia({ media, altBase }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [zoomed]);
 
-  function SlideContent({ item, className }) {
+function SlideContent({ item, variant = "thumbnail" }) {
+    const sizingClass =
+      variant === "thumbnail" ? "h-full w-full object-cover" : "max-h-[80vh] max-w-full object-contain";
+
     if (!item?.src) {
       return (
-        <div className={`h-full w-full flex items-center justify-center ${className || ""}`}>
+        <div className="h-full w-full flex items-center justify-center">
           <div className="text-center px-6">
             <div
               className="mx-auto mb-3 rounded-full flex items-center justify-center"
@@ -104,24 +107,9 @@ function ProjectMedia({ media, altBase }) {
       );
     }
     if (item.video) {
-      return (
-        <video
-          src={item.src}
-          className={`h-full w-full object-cover ${className || ""}`}
-          autoPlay
-          loop
-          muted
-          playsInline
-        />
-      );
+      return <video src={item.src} className={sizingClass} autoPlay loop muted playsInline />;
     }
-    return (
-      <img
-        src={item.src}
-        alt={item.alt || altBase}
-        className={`h-full w-full object-cover ${className || ""}`}
-      />
-    );
+    return <img src={item.src} alt={item.alt || altBase} className={sizingClass} />;
   }
 
   return (
@@ -175,13 +163,11 @@ function ProjectMedia({ media, altBase }) {
             <X size={20} color="#FFFFFF" />
           </button>
           <div
-            className="rounded-2xl overflow-hidden max-w-4xl w-full"
+            className="rounded-2xl overflow-hidden max-w-4xl w-full flex items-center justify-center"
             style={{ background: "#FFFFFF" }}
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="aspect-video w-full flex items-center justify-center">
-              <SlideContent item={slide} className="aspect-video" />
-            </div>
+            <SlideContent item={slide} variant="full" />
           </div>
         </div>
       )}
