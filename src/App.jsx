@@ -238,6 +238,7 @@ const projects = [
     note: "Флоу уже запущен, продуктовые метрики сейчас собираются",
     media: [
       { src: "/TRANSFER.png" },
+      ],
   },
   {
     chips: ["UX/UI", "B2B SaaS", "Web", "Mobile"],
