@@ -118,7 +118,7 @@ function SlideContent({ item, variant = "thumbnail" }) {
   return (
     <>
       <div
-        className="relative rounded-2xl h-full min-h-[280px] overflow-hidden cursor-zoom-in"
+        className="relative rounded-2xl aspect-[4/3] overflow-hidden cursor-zoom-in"
         style={{ background: "#FFFFFF" }}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
@@ -348,11 +348,13 @@ export default function App() {
           {projects.map((p, i) => (
             <div
               key={i}
-              className="rounded-3xl p-6 md:p-8 grid md:grid-cols-2 gap-8 items-stretch"
+              className="rounded-3xl p-6 md:p-8 grid md:grid-cols-5 gap-8 items-center"
               style={{ background: "#F3F4F7" }}
             >
-              <ProjectMedia media={p.media} altBase={p.title} />
-              <div className="flex flex-col justify-center">
+              <div className="md:col-span-3">
+                <ProjectMedia media={p.media} altBase={p.title} />
+              </div>
+              <div className="md:col-span-2 flex flex-col justify-center">
                 <div className="flex gap-2 mb-4 flex-wrap">
                   {p.chips.map((c) => (
                     <span
