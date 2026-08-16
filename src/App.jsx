@@ -222,7 +222,10 @@ const projects = [
     title: "FX Exchange для бизнеса",
     description:
       "Задизайнила FX-обменник для юридических лиц с нуля — от MVP с ограниченными валютными парами и лимитами операций до полноценного продукта для покупки и продажи валюты по динамическим котировкам. По мере развития продукта проектировала новые сценарии: сделки по валютным контрактам, фиксация курса, сложные сценарии подписания и онбординг",
-    results: ["От MVP к полноценному продукту", "Проведение usability-тестирований", "Рост ежедневных FX-операций в 5,9 раза"],
+    results: [
+  { value: "5,9×", label: "рост ежедневных FX-операций" },
+  { value: "4", label: "новых сценария добавлено в продукт" },
+],
     note: null,
     media: [
        { src: "/FX-1.png" },
@@ -245,7 +248,10 @@ const projects = [
     title: "Договоры по QR для электронного документооборота",
     description:
       "Спроектировала новый сценарий массового подписания договоров в B2B-платформе электронного документооборота для случаев, когда инициатор не знает данные контрагентов заранее. Вместе с командой провела usability-тестирования и создала флоу, в котором компания делится QR-кодом или ссылкой на типовой договор, а контрагент самостоятельно заполняет свои данные и подписывает документ. Сценарий также стал дополнительной точкой входа в продукт для новых пользователей",
-    results: ["Проведение usability-тестирований", "−32% времени от создания до подписания", "Конверсия во флоу регистрации 11%"],
+    results: [
+  { value: "−32%", label: "времени от создания до подписания" },
+  { value: "11%", label: "конверсия во флоу регистрации" },
+],
     note: null,
     media: [
       { src: "/QR-1.png" },
@@ -403,15 +409,22 @@ export default function App() {
                 </p>
 
                 {p.results.length > 0 && (
-                  <div className="flex flex-wrap gap-3">
-                    {p.results.map((r) => (
-                      <div
-                        key={r}
-                        className="rounded-xl px-4 py-3 text-[13px] font-semibold flex-1 min-w-[160px]"
-                        style={{ background: "#DADCE1", color: INK, fontFamily: DISPLAY_FONT }}
-                      >
-                        {r}
-                      </div>
+                  <div className="flex items-stretch gap-6">
+                    {p.results.map((r, ri) => (
+                      <React.Fragment key={r.label}>
+                        {ri > 0 && <div className="w-px self-stretch" style={{ background: "#DADCE1" }} />}
+                        <div>
+                          <p
+                            className="text-[26px] font-bold leading-none mb-1.5"
+                            style={{ fontFamily: DISPLAY_FONT, color: INK }}
+                          >
+                            {r.value}
+                          </p>
+                          <p className="text-[13px]" style={{ color: MUTED }}>
+                            {r.label}
+                          </p>
+                        </div>
+                      </React.Fragment>
                     ))}
                   </div>
                 )}
