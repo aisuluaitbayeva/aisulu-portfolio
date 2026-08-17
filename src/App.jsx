@@ -240,7 +240,8 @@ const projects = [
     results: [],
     note: "Флоу уже запущен, продуктовые метрики сейчас собираются",
     media: [
-      { src: "/TRANSFER.png" },
+      { src: "/TRANSFER-1.png" },
+      { src: "/TRANSFER-2.png" },
       ],
   },
   {
